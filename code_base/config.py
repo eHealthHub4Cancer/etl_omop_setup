@@ -74,3 +74,16 @@ class Config:
             "achilles_result_sql": os.getenv("achillesResult"),
             "achilles_count_sql": os.getenv("achillesCount"),
         }
+        
+    # Get the list of CDM schemas from the environment variable and return it as a dictionary
+    def load_cdm_schemas(self):
+        return {
+            "cdm_schemas": os.getenv("cdmSchemas").split(","),
+        }
+        
+    # Get the list of all vocabulary tables
+    def load_vocab_tables(self):
+        return {
+            "vocab_tables": os.getenv("vocabTables").split(","),
+        }
+    

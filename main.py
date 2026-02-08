@@ -103,18 +103,27 @@ def run_achilles_analysis(db_conn: DBConnector, config: Config):
     ddl.run_achilles_script(achilles_configs['achilles_count_sql'])
     print("Achilles analysis completed.")
 
+# This is necessary to avoid error from packages like feature extraction. We encountered issues
+# when running cohort characterization with feature extraction, which is used in ATLAS. The error was related to the fact that the CDM and Vocabulary views were not created before running the feature extraction. By creating the views at the end of the setup process, we ensure that they are available for any subsequent analysis or feature extraction tasks, thus preventing such errors and ensuring a smoother workflow for users who rely on these views for their analyses.
+# Reason being that the cdm and vocab tables were in seperate schemas.
+def run_cdm_vocab_view(db_conn: DBConnector, config: Config):
+    cdm_schemas = config.load_cdm_schemas()
+    vocab_schema = config.load_schema_config()['vocabDatabaseSchema']
+    vocab_tables = config.load_vocab_tables()
+    ddl = DDL(db_conn)
+    ddl._execute_view_cdm(cdm_schemas['cdm_schemas'], vocab_tables['vocab_tables'], vocab_schema)
+
 def main():
     db_conn = None
     try:
         # Step 1: Initialize
         db_conn, config = initialize_db_connector()
         # Step 2: Permissions
-        setup_security_and_roles(db_conn, config)
+        # setup_security_and_roles(db_conn, config)
         # Step 3: DDL
-        ddl, sql_paths = run_database_ddl(db_conn, config, create=False)
+        # ddl, sql_paths = run_database_ddl(db_conn, config, create=False)
         # Step 4: Data
         # load_initial_data(db_conn, config, ddl, sql_paths)
-
         # Step 5: Achilles Analysis
         # Please check the readme before running Achilles analysis.
         # This should be run only after confirming the database is fully set up.
@@ -123,6 +132,9 @@ def main():
         # Please ensure you comment step 2 - 4 if you have already run them once.
         
         # run_achilles_analysis(db_conn, config)
+        
+        # Step 6: Create CDM and Vocabulary Views
+        run_cdm_vocab_view(db_conn, config)
         
         print("Full OMOP Database setup completed successfully.")
 
