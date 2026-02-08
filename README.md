@@ -95,6 +95,12 @@ vocabCsvFolder=/absolute/path/to/vocab/csvs
 # Achilles (optional)
 achillesResult=achilles_scripts/achilles_result.sql
 achillesCount=achilles_scripts/achilles_count.sql
+
+# View for Cohort Diagnostic Analysis, Feature Extraction, and more
+cdmSchemas=cdm_schema1,cdm_schema2
+#vocab tables for views seperated by comma.
+vocabTables=concept,concept_ancestor,concept_relationship,concept_synonym,domain,relationship,source_to_concept_map,vocabulary,drug_strength,concept_class
+
 ```
 
 ## Install dependencies

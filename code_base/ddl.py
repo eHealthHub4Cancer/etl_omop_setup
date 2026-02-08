@@ -72,3 +72,15 @@ class DDL:
                 sql_commands = sql_commands.replace("@tempSchema", self.db_connector.tempSchema)      
                 cursor.execute(sql_commands)
             self.db_connector.connect.commit()
+            
+    def _execute_view_cdm(self, cdm_schemas, vocab_tables, vocab_schema: str):
+        with self.db_connector.connect.cursor() as cursor:
+            for cdm in cdm_schemas:
+                for table in vocab_tables:
+                    sql_command = f"""
+                    CREATE OR REPLACE VIEW {cdm}.{table} AS
+                    SELECT *
+                    FROM {vocab_schema}.{table};
+                    """
+                    cursor.execute(sql_command)
+            self.db_connector.connect.commit()
